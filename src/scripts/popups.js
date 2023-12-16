@@ -6,27 +6,70 @@ let popupAdd = document.querySelector('.popup_type_new-card');
 let placesList = document.querySelector('.places__list');
 let popupImage = document.querySelector('.popup_type_image');
 let page = document.querySelector('.page');
+let profileTitle = document.querySelector('.profile__title');
+let profileDescription = document.querySelector('.profile__description');
 
 // Сгруппированные popup окна и их триггеры (кнопки)
 let button_popup_type = [
-    [editButton, popupEdit, 'form'],
-    [addButton, popupAdd, 'form'],
+    [editButton, popupEdit, 'profile'],
+    [addButton, popupAdd, 'newCard'],
     [placesList, popupImage, 'image']
 ]
 
 // Функция открытия popup окна
 function popupOpen(popupEvt, popup, popupType) {
     switch (popupType) {
-        case 'image':
+        case 'profile': // Открыть форму профиля
+            // Установить текущие данные профиля в поля формы
+            popup.querySelector('.popup__input_type_name').value = profileTitle.textContent;
+            popup.querySelector('.popup__input_type_description').value = profileDescription.textContent;
+
+            // Создать обработчик подтверждения формы
+            let popupForm = popup.querySelector('.popup__form');
+            popupForm.addEventListener('submit', evt => submitPopupProfileForm(evt, popup));
+
+            // Открыть popup
+            popup.classList.add('popup_is-opened');
+            break;
+
+        case 'newCard': // Открыть форму добавления новой карточки
+            popup.classList.add('popup_is-opened');
+            break;
+
+        case 'image': // Открыть изображение карточки
             if (!insertPopupImage(popupEvt, popup))
                 break;
-            
-        case 'form':
+
             popup.classList.add('popup_is-opened');
+            
             break;
     }
 
-    addPopupCloseEventHandler(popup);
+    // Создать обработчики для закрытия pop
+    popup.addEventListener('click', evt => closePopupByClick(evt, popup));
+    page.addEventListener('keydown', evt => closePopupByEscape(evt, popup));
+}
+
+// Функция обработки submit'a на форме профиля
+function submitPopupProfileForm(evt, popup) {
+    evt.preventDefault();
+        
+    profileTitle.textContent = popup.querySelector('.popup__input_type_name').value;
+    profileDescription.textContent = popup.querySelector('.popup__input_type_description').value;
+
+    popupClose(popup);
+}
+
+// Функция закрытия popup'a
+function popupClose(popup) {
+    let popupForm = popup.querySelector('.popup__form');
+    if (popupForm)
+        popupForm.removeEventListener('submit', evt => submitPopupProfileForm(evt, popup));
+    
+    popup.removeEventListener('click', evt => closePopupByClick(evt, popup));
+    page.removeEventListener('keydown', evt => closePopupByEscape(evt, popup));
+
+    popup.classList.remove('popup_is-opened');
 }
 
 // Функция добавления изображение в popup окно
@@ -45,20 +88,13 @@ function insertPopupImage(popupEvt, popup) {
     return true;
 }
 
-// Функция добавления popap'у обработки события закрытия
-function addPopupCloseEventHandler(popup) {
-    popup.addEventListener('click', evt => closePopupByClick(evt, popup));
-    page.addEventListener('keydown', evt => closePopupByEscape(evt, popup));
-} 
-
 // Функция закрытия popup'a по клику мыши
 function closePopupByClick(evt, popup) {
     let clickToCloseBtn = evt.target.classList.contains('popup__close');
     let clickToOverlay = evt.target.classList.contains('popup');
     
-    if (clickToCloseBtn || clickToOverlay) {
-        popup.classList.remove('popup_is-opened');
-    }
+    if (clickToCloseBtn || clickToOverlay)
+        popupClose(popup);
 }
 
 // Функция закрытия popup'a по нажатию на Escape
@@ -66,16 +102,8 @@ function closePopupByEscape(popupEvt, popup) {
     if (popupEvt.key != 'Escape')
         return;
     
-    popup.classList.remove('popup_is-opened');
-
-    removePopupCloseEventHandler(popup);
+    popupClose(popup);
 }
-
-// Функция удаления у popap'а обработчиков события закрытия
-function removePopupCloseEventHandler(popup) {
-    popup.removeEventListener('click', evt => closePopupByClick(evt, popup));
-    page.removeEventListener('keydown', evt => closePopupByEscape(evt, popup));
-} 
 
 // Обработка события открытия popup'а
 button_popup_type.forEach(function (pack) {
