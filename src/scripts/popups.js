@@ -19,7 +19,8 @@ let button_popup_type = [
 // Функция открытия popup окна
 function popupOpen(popupEvt, popup, popupType) {
     switch (popupType) {
-        case 'profile': // Открыть форму профиля
+        // Открыть popup профиля
+        case 'profile':
             // Установить текущие данные профиля в поля формы
             popup.querySelector('.popup__input_type_name').value = profileTitle.textContent;
             popup.querySelector('.popup__input_type_description').value = profileDescription.textContent;
@@ -32,11 +33,13 @@ function popupOpen(popupEvt, popup, popupType) {
             popup.classList.add('popup_is-opened');
             break;
 
-        case 'newCard': // Открыть форму добавления новой карточки
+        // Открыть popup добавления новой карточки
+        case 'newCard':
             popup.classList.add('popup_is-opened');
             break;
 
-        case 'image': // Открыть изображение карточки
+        // Открыть popup изображения карточки
+        case 'image':
             if (!insertPopupImage(popupEvt, popup))
                 break;
 
@@ -45,7 +48,7 @@ function popupOpen(popupEvt, popup, popupType) {
             break;
     }
 
-    // Создать обработчики для закрытия pop
+    // Создать обработчики закрытия popup'a
     popup.addEventListener('click', evt => closePopupByClick(evt, popup));
     page.addEventListener('keydown', evt => closePopupByEscape(evt, popup));
 }
@@ -65,27 +68,11 @@ function popupClose(popup) {
     let popupForm = popup.querySelector('.popup__form');
     if (popupForm)
         popupForm.removeEventListener('submit', evt => submitPopupProfileForm(evt, popup));
-    
+
     popup.removeEventListener('click', evt => closePopupByClick(evt, popup));
     page.removeEventListener('keydown', evt => closePopupByEscape(evt, popup));
 
     popup.classList.remove('popup_is-opened');
-}
-
-// Функция добавления изображение в popup окно
-function insertPopupImage(popupEvt, popup) {
-    if (!popupEvt.target.classList.contains('card__image')){
-        popupEvt.preventDefault;
-        return false;
-    }
-
-    let imageElement = popup.querySelector('.popup__image');
-    imageElement.src = popupEvt.target.src;
-
-    let popupCaption = popup.querySelector('.popup__caption');
-    popupCaption.textContent = popupEvt.target.parentElement.querySelector('.card__title').textContent;
-
-    return true;
 }
 
 // Функция закрытия popup'a по клику мыши
@@ -103,6 +90,22 @@ function closePopupByEscape(popupEvt, popup) {
         return;
     
     popupClose(popup);
+}
+
+// Функция добавления изображение в popup окно
+function insertPopupImage(popupEvt, popup) {
+    if (!popupEvt.target.classList.contains('card__image')){
+        popupEvt.preventDefault;
+        return false;
+    }
+
+    let imageElement = popup.querySelector('.popup__image');
+    imageElement.src = popupEvt.target.src;
+
+    let popupCaption = popup.querySelector('.popup__caption');
+    popupCaption.textContent = popupEvt.target.parentElement.querySelector('.card__title').textContent;
+
+    return true;
 }
 
 // Обработка события открытия popup'а
