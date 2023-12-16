@@ -29,5 +29,3 @@ function deleteCard(event) {
 
 // @todo: Вывести карточки на страницу
 initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard)));
-
-// @todo: Рopup окна

@@ -14,6 +14,21 @@ let button_popup_type = [
     [placesList, popupImage, 'image']
 ]
 
+// Функция открытия popup окна
+function popupOpen(popupEvt, popup, popupType) {
+    switch (popupType) {
+        case 'image':
+            if (!insertPopupImage(popupEvt, popup))
+                break;
+            
+        case 'form':
+            popup.classList.add('popup_is-opened');
+            break;
+    }
+
+    addPopupCloseEventHandler(popup);
+}
+
 // Функция добавления изображение в popup окно
 function insertPopupImage(popupEvt, popup) {
     if (!popupEvt.target.classList.contains('card__image')){
@@ -30,18 +45,37 @@ function insertPopupImage(popupEvt, popup) {
     return true;
 }
 
-// Функция открытия popup окна
-function popupOpen(popupEvt, popup, popupType) {
-    switch (popupType) {
-        case 'image':
-            if (!insertPopupImage(popupEvt, popup))
-                break;
-            
-        case 'form':
-            popup.classList.add('popup_is-opened');
-            break;
+// Функция добавления popap'у обработки события закрытия
+function addPopupCloseEventHandler(popup) {
+    popup.addEventListener('click', evt => closePopupByClick(evt, popup));
+    page.addEventListener('keydown', evt => closePopupByEscape(evt, popup));
+} 
+
+// Функция закрытия popup'a по клику мыши
+function closePopupByClick(evt, popup) {
+    let clickToCloseBtn = evt.target.classList.contains('popup__close');
+    let clickToOverlay = evt.target.classList.contains('popup');
+    
+    if (clickToCloseBtn || clickToOverlay) {
+        popup.classList.remove('popup_is-opened');
     }
 }
+
+// Функция закрытия popup'a по нажатию на Escape
+function closePopupByEscape(popupEvt, popup) {
+    if (popupEvt.key != 'Escape')
+        return;
+    
+    popup.classList.remove('popup_is-opened');
+
+    removePopupCloseEventHandler(popup);
+}
+
+// Функция удаления у popap'а обработчиков события закрытия
+function removePopupCloseEventHandler(popup) {
+    popup.removeEventListener('click', evt => closePopupByClick(evt, popup));
+    page.removeEventListener('keydown', evt => closePopupByEscape(evt, popup));
+} 
 
 // Обработка события открытия popup'а
 button_popup_type.forEach(function (pack) {
@@ -50,15 +84,4 @@ button_popup_type.forEach(function (pack) {
     let popupType = pack[2];
 
     popubButton.addEventListener('click', evt => popupOpen(evt, popup, popupType));
-});
-
-// Обработка события закрытия popup'a
-page.addEventListener('click', evt => {
-    let clickToCloseBtn = evt.target.classList.contains('popup__close');
-    let clickToOverlay = evt.target.classList.contains('popup');
-
-    if (clickToCloseBtn || clickToOverlay) {
-        let openedPopup = document.querySelector('.popup_is-opened');
-        openedPopup.classList.remove('popup_is-opened');
-    }
 });
