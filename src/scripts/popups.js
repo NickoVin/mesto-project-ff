@@ -24,6 +24,9 @@ function insertPopupImage(popupEvt, popup) {
     let imageElement = popup.querySelector('.popup__image');
     imageElement.src = popupEvt.target.src;
 
+    let popupCaption = popup.querySelector('.popup__caption');
+    popupCaption.textContent = popupEvt.target.parentElement.querySelector('.card__title').textContent;
+
     return true;
 }
 
