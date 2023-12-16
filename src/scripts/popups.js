@@ -51,8 +51,11 @@ button_popup_type.forEach(function (pack) {
 
 // Обработка события закрытия popup'a
 page.addEventListener('click', evt => {
-    if (evt.target.classList.contains('popup__close')) {
-        let popupElement = evt.target.parentElement.parentElement;
-        popupElement.classList.remove('popup_is-opened');
+    let clickToCloseBtn = evt.target.classList.contains('popup__close');
+    let clickToOverlay = evt.target.classList.contains('popup');
+
+    if (clickToCloseBtn || clickToOverlay) {
+        let openedPopup = document.querySelector('.popup_is-opened');
+        openedPopup.classList.remove('popup_is-opened');
     }
 });
