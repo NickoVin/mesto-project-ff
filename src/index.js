@@ -1,7 +1,6 @@
 import './pages/index.css';
+import './scripts/popups.js'
 import {initialCards} from './scripts/cards.js';
-
-console.log(initialCards);
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
@@ -30,3 +29,5 @@ function deleteCard(event) {
 
 // @todo: Вывести карточки на страницу
 initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard)));
+
+// @todo: Рopup окна
