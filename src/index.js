@@ -52,8 +52,17 @@ editForm.addEventListener('submit', function (evt) {
 });
 
 // Обработчик отправки формы добавления новой карточки
-cardForm.addEventListener('sumbit', function (evt) {
+cardForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
 
+    const cardData = {
+        name: cardForm.querySelector('.popup__input_type_card-name').value,
+        link: cardForm.querySelector('.popup__input_type_url').value
+    }
+
+    cardList.prepend(createCard(cardData, deleteCard));
+
+    closeModal(cardModal);
 });
 
 // Функция-обработчик события открытия модального окна для редактирования профиля

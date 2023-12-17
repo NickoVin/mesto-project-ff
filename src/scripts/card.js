@@ -10,6 +10,8 @@ export function createCard(cardData, deleteCard) {
     cardImage.src = cardData.link;
     cardImage.alt = cardData.name;
 
+    console.log();
+
     cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
 
     return cardElement;
