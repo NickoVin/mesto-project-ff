@@ -26,7 +26,6 @@ const cardForm = document.forms['new-place'];
 
 // Навешивание обработчиков открытия модальных окон
 editButton.addEventListener('click', openProfileEditModal);
-placesList.addEventListener('click', openImageModal);
 addButton.addEventListener('click', () => openModal(cardModal));
 
 // Навешивание обработчиков закрытия модальных окон по нажатию на кнопку закрытия
@@ -60,7 +59,7 @@ cardForm.addEventListener('submit', function (evt) {
         link: cardForm.querySelector('.popup__input_type_url').value
     }
 
-    cardList.prepend(createCard(cardData, deleteCard, likeCard));
+    cardList.prepend(createCard(cardData, deleteCard, likeCard, openImageModal));
 
     closeModal(cardModal);
 });
@@ -78,10 +77,6 @@ function openProfileEditModal(evt) {
 
 // Функция открытия модального окна изображения карточки
 function openImageModal(evt) {
-    if (!evt.target.classList.contains('card__image')) {
-        return;
-    }
-
     const cardImage = evt.target;
     const modalImageElement = imageModal.querySelector('.popup__image');
     const modalCaprionElement = imageModal.querySelector('.popup__caption');
@@ -93,7 +88,7 @@ function openImageModal(evt) {
 }
 
 // Вывести карточки на страницу
-initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard, likeCard)));
+initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard, likeCard, openImageModal)));
 
 // Функция-обработчик события клика на сердечко карточки
 function likeCard(evt) {
