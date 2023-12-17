@@ -1,16 +1,7 @@
 import './pages/index.css';
-import { openModal, closeModal } from './scripts/modal.js'
-import { createCard, deleteCard } from './scripts/card.js';
-import { initialCards } from './scripts/cards.js';
-
-/*
-    В файле index.js описана инициализация приложения и основная логика страницы:
-        1. Поиск DOM-элементов на странице и навешивание на них обработчиков событий
-        2. Обработчики отправки форм
-        3. Функция-обработчик события открытия модального окна для редактирования профиля
-        4. Функция открытия модального окна изображения карточки
-    Также в index.js находится код, который отвечает за отображение шести карточек при открытии страницы.
-*/
+import { openModal, closeModal } from './components/modal.js'
+import { createCard, deleteCard } from './components/card.js';
+import { initialCards } from './components/cards.js';
 
 // DOM узлы
 const cardList = document.querySelector('.places__list');
@@ -94,61 +85,3 @@ initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard
 function likeCard(evt) {
     evt.target.classList.toggle('card__like-button_is-active');
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-// Обработчики событий для модального окна
-modalsData.forEach(function (modalData) {
-    // Открытие модального окна при клике на кнопки
-    modalData.targetObj.addEventListener('click', function (evt) {
-        // Отобразить модальное окно
-        openModal(modalData);
-        
-        // Закрытие модального онка при клике на крестик или оверлэй
-        modalData.modalObj.addEventListener('click', function(evt) {
-            let clickToCloseBtn = evt.target.classList.contains('popup__close');
-            let clickToOverlay = evt.target.classList.contains('popup');
-            
-            if (clickToCloseBtn || clickToOverlay) {
-                closeModal(modalData.modalObj);
-            }
-        });
-
-        // Сохранение данных на форме модального окна
-        let modalForm = modalData.modalObj.querySelector('.popup__form');
-        if (modalForm) {
-            modalForm.addEventListener('submit', evt => {
-                // Отменить стандартное поведение submit'a
-                evt.preventDefault();
-        
-                // Обновить данные профиля данными из формы модального окна
-                let profileTitle = document.querySelector('.profile__title');
-                let profileDescription = document.querySelector('.profile__description');
-                profileTitle.textContent = modalData.modalObj.querySelector('.popup__input_type_name').value;
-                profileDescription.textContent = modalData.modalObj.querySelector('.popup__input_type_description').value;
-
-                // Закрыть модальное окно
-                closeModal(modalData.modalObj);
-            });
-        }
-    });
-});*/
