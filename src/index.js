@@ -1,31 +1,70 @@
 import './pages/index.css';
-import './scripts/popups.js'
-import {initialCards} from './scripts/cards.js';
+import { modalsData } from './scripts/modals.js';
+import { openModal, closeModal } from './scripts/modal.js'
+import { createCard, deleteCard } from './scripts/card.js';
+import { initialCards } from './scripts/cards.js';
 
-// @todo: Темплейт карточки
-const cardTemplate = document.querySelector('#card-template').content;
-
-// @todo: DOM узлы
+// DOM узлы
 const cardList = document.querySelector('.places__list');
 
-// @todo: Функция создания карточки
-function createCard(cardData, deleteCard) {
-    const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-    const cardImage = cardElement.querySelector('.card__image');
-
-    cardElement.querySelector('.card__title').textContent = cardData.name;
-    cardImage.src = cardData.link;
-    cardImage.alt = cardData.name;
-
-    cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
-
-    return cardElement;
-}
-
-// @todo: Функция удаления карточки
-function deleteCard(event) {
-    event.target.parentNode.remove();
-}
-
-// @todo: Вывести карточки на страницу
+// Вывести карточки на страницу
 initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard)));
+
+// Обработчики событий для модального окна
+modalsData.forEach(function (modalData) {
+    // Открытие модального окна при клике на кнопки
+    modalData.targetObj.addEventListener('click', function (evt) {
+        // Отобразить модальное окно
+        openModal(modalData);
+        
+        // Закрытие модального онка при клике на крестик или оверлэй
+        modalData.modalObj.addEventListener('click', function(evt) {
+            let clickToCloseBtn = evt.target.classList.contains('popup__close');
+            let clickToOverlay = evt.target.classList.contains('popup');
+            
+            if (clickToCloseBtn || clickToOverlay) {
+                closeModal(modalData.modalObj);
+                removeKeydownHandler(modalData);
+            }
+        });
+
+        // Закрытие модального окна при нажатии на Escape
+        const keydownHandler = evt => closeModalByEscape(evt, modalData);
+        modalData.modalObj.closest('.page').addEventListener('keydown', keydownHandler);
+
+        // Сохранение данных на форме модального окна
+        let modalForm = modalData.modalObj.querySelector('.popup__form');
+        if (modalForm) {
+            modalForm.addEventListener('submit', evt => {
+                // Отменить стандартное поведение submit'a
+                evt.preventDefault();
+        
+                // Обновить данные профиля данными из формы модального окна
+                let profileTitle = document.querySelector('.profile__title');
+                let profileDescription = document.querySelector('.profile__description');
+                profileTitle.textContent = modalData.modalObj.querySelector('.popup__input_type_name').value;
+                profileDescription.textContent = modalData.modalObj.querySelector('.popup__input_type_description').value;
+
+                // Закрыть модальное окно
+                closeModal(modalData.modalObj);
+                removeKeydownHandler(modalData);
+            });
+        }
+
+        // Сохранить обработчик для дальнейшего удаления
+        modalData.keydownHandler = keydownHandler;
+    });
+});
+
+// Функция закрытия модального окна через Escape
+function closeModalByEscape(evt, modal) {
+    if (evt.key === 'Escape') {
+        closeModal(modal.modalObj);
+        removeKeydownHandler(modal);
+    }
+}
+
+// Функция удаление обработчика нажатия клавиши
+function removeKeydownHandler(modal) {
+    modal.modalObj.closest('.page').removeEventListener('keydown', modal.keydownHandler);
+}
