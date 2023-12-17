@@ -39,8 +39,3 @@ function closeModalByOverlayClick(evt) {
 function getOpenedModal() {
     return document.querySelector('.popup_is-opened');
 }
-
-// Функция открытия модального окна новой карточки
-function openNewCardModal(modalData) {
-    modalData.modalObj.classList.add('popup_is-opened');
-}

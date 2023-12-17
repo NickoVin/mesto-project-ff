@@ -27,10 +27,7 @@ const cardForm = document.forms['new-place'];
 // Навешивание обработчиков открытия модальных окон
 editButton.addEventListener('click', openProfileEditModal);
 placesList.addEventListener('click', openImageModal);
-addButton.addEventListener('click', function(evt) {
-    const addModal = document.querySelector('.popup_type_new-card');
-    openModal(addModal);
-});
+addButton.addEventListener('click', () => openModal(cardModal));
 
 // Навешивание обработчиков закрытия модальных окон по нажатию на кнопку закрытия
 modals.forEach(modal => {
