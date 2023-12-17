@@ -1,7 +1,7 @@
-// @todo: Темплейт карточки
+// Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 
-// @todo: Функция создания карточки
+// Функция создания карточки
 export function createCard(cardData, deleteCard, likeCard, openImage) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
@@ -17,7 +17,12 @@ export function createCard(cardData, deleteCard, likeCard, openImage) {
     return cardElement;
 }
 
-// @todo: Функция удаления карточки
+// Функция удаления карточки
 export function deleteCard(event) {
     event.target.parentNode.remove();
+}
+
+// Функция-обработчик события клика на сердечко карточки
+export function likeCard(evt) {
+    evt.target.classList.toggle('card__like-button_is-active');
 }

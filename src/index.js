@@ -1,13 +1,12 @@
 import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js'
-import { createCard, deleteCard } from './components/card.js';
+import { createCard, deleteCard, likeCard } from './components/card.js';
 import { initialCards } from './components/cards.js';
 
 // DOM узлы
 const cardList = document.querySelector('.places__list');
 const editButton = document.querySelector('.profile__edit-button');
-const addButton = document.querySelector('.profile__add-button')
-const placesList = document.querySelector('.places__list');
+const addButton = document.querySelector('.profile__add-button');
 const editModal = document.querySelector('.popup_type_edit');
 const cardModal = document.querySelector('.popup_type_new-card');
 const imageModal = document.querySelector('.popup_type_image');
@@ -80,8 +79,3 @@ function openImageModal(evt) {
 
 // Вывести карточки на страницу
 initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard, likeCard, openImageModal)));
-
-// Функция-обработчик события клика на сердечко карточки
-function likeCard(evt) {
-    evt.target.classList.toggle('card__like-button_is-active');
-}
