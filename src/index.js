@@ -60,7 +60,7 @@ cardForm.addEventListener('submit', function (evt) {
         link: cardForm.querySelector('.popup__input_type_url').value
     }
 
-    cardList.prepend(createCard(cardData, deleteCard));
+    cardList.prepend(createCard(cardData, deleteCard, likeCard));
 
     closeModal(cardModal);
 });
@@ -93,7 +93,12 @@ function openImageModal(evt) {
 }
 
 // Вывести карточки на страницу
-initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard)));
+initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard, likeCard)));
+
+// Функция-обработчик события клика на сердечко карточки
+function likeCard(evt) {
+    evt.target.classList.toggle('card__like-button_is-active');
+}
 
 
 
