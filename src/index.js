@@ -15,23 +15,29 @@ const profileDescription = document.querySelector('.profile__description');
 const modalProfileTile = editModal.querySelector('.popup__input_type_name');
 const modalProfileDescription = editModal.querySelector('.popup__input_type_description');
 const modalImageElement = imageModal.querySelector('.popup__image');
-const modalCaprionElement = imageModal.querySelector('.popup__caption');
-const modals = [editModal, cardModal, imageModal];
+const modalCaptionElement = imageModal.querySelector('.popup__caption');
 const editForm = document.forms['edit-profile'];
 const cardForm = document.forms['new-place'];
+const popups = document.querySelectorAll('.popup');
 
 // Навешивание обработчиков открытия модальных окон
 editButton.addEventListener('click', openProfileEditModal);
 addButton.addEventListener('click', () => openModal(cardModal));
 
-// Навешивание обработчиков закрытия модальных окон по нажатию на кнопку закрытия
-modals.forEach(modal => {
-    modal.addEventListener('click', function(evt) {
+// Навешивание обработчиков закрытия модальных окон
+popups.forEach((popup) => {
+    popup.addEventListener('mousedown', (evt) => {
+        if (evt.button != 0) return;
+
+        if (evt.target.classList.contains('popup_is-opened')) {
+            closeModal(popup)
+        }
+
         if (evt.target.classList.contains('popup__close')) {
-            closeModal(modal);
+            closeModal(popup)
         }
     })
-})
+}) 
 
 // Обработчик отправки формы редактирования профиля
 editForm.addEventListener('submit', function (evt) {
@@ -68,13 +74,10 @@ function openProfileEditModal(evt) {
 }
 
 // Функция открытия модального окна изображения карточки
-function openImageModal(evt) {
-    const cardImage = evt.target;
-    const cardTitle = cardImage.parentElement.querySelector('.card__title');
-
-    modalImageElement.src = cardImage.src;
-    modalImageElement.alt = cardTitle.textContent;
-    modalCaprionElement.textContent = cardTitle.textContent;
+function openImageModal(cardData) {
+    modalImageElement.src = cardData.link;
+    modalImageElement.alt = cardData.name;
+    modalCaptionElement.textContent = cardData.name;
     
     openModal(imageModal);
 }

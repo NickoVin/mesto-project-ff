@@ -12,7 +12,7 @@ export function createCard(cardData, deleteCard, likeCard, openImage) {
 
     cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
     cardElement.querySelector('.card__like-button').addEventListener('click', likeCard);
-    cardImage.addEventListener('click', openImage);
+    cardImage.addEventListener('click', () => openImage(cardData));
 
     return cardElement;
 }
