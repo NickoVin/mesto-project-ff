@@ -10,6 +10,12 @@ const addButton = document.querySelector('.profile__add-button');
 const editModal = document.querySelector('.popup_type_edit');
 const cardModal = document.querySelector('.popup_type_new-card');
 const imageModal = document.querySelector('.popup_type_image');
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+const modalProfileTile = editModal.querySelector('.popup__input_type_name');
+const modalProfileDescription = editModal.querySelector('.popup__input_type_description');
+const modalImageElement = imageModal.querySelector('.popup__image');
+const modalCaprionElement = imageModal.querySelector('.popup__caption');
 const modals = [editModal, cardModal, imageModal];
 const editForm = document.forms['edit-profile'];
 const cardForm = document.forms['new-place'];
@@ -30,12 +36,9 @@ modals.forEach(modal => {
 // Обработчик отправки формы редактирования профиля
 editForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-        
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
 
-    profileTitle.textContent = editModal.querySelector('.popup__input_type_name').value;
-    profileDescription.textContent = editModal.querySelector('.popup__input_type_description').value;
+    profileTitle.textContent = modalProfileTile.value;
+    profileDescription.textContent = modalProfileDescription.value;
 
     closeModal(editModal);
 });
@@ -51,16 +54,15 @@ cardForm.addEventListener('submit', function (evt) {
 
     cardList.prepend(createCard(cardData, deleteCard, likeCard, openImageModal));
 
+    evt.target.reset();
+
     closeModal(cardModal);
 });
 
 // Функция-обработчик события открытия модального окна для редактирования профиля
 function openProfileEditModal(evt) {
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
-
-    editModal.querySelector('.popup__input_type_name').value = profileTitle.textContent;
-    editModal.querySelector('.popup__input_type_description').value = profileDescription.textContent;
+    modalProfileTile.value = profileTitle.textContent;
+    modalProfileDescription.value = profileDescription.textContent;
 
     openModal(editModal);
 }
@@ -68,11 +70,11 @@ function openProfileEditModal(evt) {
 // Функция открытия модального окна изображения карточки
 function openImageModal(evt) {
     const cardImage = evt.target;
-    const modalImageElement = imageModal.querySelector('.popup__image');
-    const modalCaprionElement = imageModal.querySelector('.popup__caption');
+    const cardTitle = cardImage.parentElement.querySelector('.card__title');
 
     modalImageElement.src = cardImage.src;
-    modalCaprionElement.textContent = cardImage.parentElement.querySelector('.card__title').textContent;
+    modalImageElement.alt = cardTitle.textContent;
+    modalCaprionElement.textContent = cardTitle.textContent;
     
     openModal(imageModal);
 }
