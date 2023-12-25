@@ -9,22 +9,20 @@ export function openModal(modal) {
 export function closeModal(modal) {
     modal.classList.remove('popup_is-opened');
     document.removeEventListener('keydown', closeModalByEsc);
+    modal.removeEventListener('click', closeModalByOverlayClick);
 }
 
 // Функция-обработчик события нажатия Esc
 function closeModalByEsc(evt) {
     if (evt.key === 'Escape') {
-        let modal = getOpenedModal();
+        const modal = getOpenedModal();
         closeModal(modal);
     }
 }
 
 // Функция-обработчик события клика по оверлею
 function closeModalByOverlayClick(evt) {        
-    if (evt.target.classList.contains('popup')) {
-        let modal = getOpenedModal();
-        closeModal(modal);
-    }
+    closeModal(evt.target);
 }
 
 // Функция получения открытого модального окна

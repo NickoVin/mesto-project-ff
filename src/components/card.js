@@ -12,14 +12,14 @@ export function createCard(cardData, deleteCard, likeCard, openImage) {
 
     cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
     cardElement.querySelector('.card__like-button').addEventListener('click', likeCard);
-    cardElement.querySelector('.card__image').addEventListener('click', openImage);
+    cardImage.addEventListener('click', openImage);
 
     return cardElement;
 }
 
 // Функция удаления карточки
 export function deleteCard(event) {
-    event.target.parentNode.remove();
+    event.target.closest('.card').remove();
 }
 
 // Функция-обработчик события клика на сердечко карточки
