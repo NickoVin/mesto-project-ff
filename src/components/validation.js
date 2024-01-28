@@ -54,7 +54,6 @@ function enableSubmitButton(buttonElement) {
 
 // Функция проверки наличия невалидного поля формы
 function hasInvalidInput(inputList) {
-    inputList.forEach(input => console.log(input.validity));
     return inputList.some((input) => {
         return !input.validity.valid;
     });
