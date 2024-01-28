@@ -1,0 +1,12 @@
+.popup__form__field {
+  display: flex;
+  position: relative;
+}
+
+.popup__form .popup__form__field:first-child {
+  z-index: 1;
+}
+  
+.popup__form .popup__form__field:not(:last-of-type) {
+    margin-bottom: 11px;
+}

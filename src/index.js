@@ -2,6 +2,7 @@ import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js'
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { initialCards } from './components/cards.js';
+import { enableValidation, clearValidation } from './components/validation.js';
 
 // DOM узлы
 const cardList = document.querySelector('.places__list');
@@ -20,21 +21,29 @@ const editForm = document.forms['edit-profile'];
 const cardForm = document.forms['new-place'];
 const popups = document.querySelectorAll('.popup');
 
+const validationConfiguration = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+}
+
 // Навешивание обработчиков открытия модальных окон
 editButton.addEventListener('click', openProfileEditModal);
-addButton.addEventListener('click', () => openModal(cardModal));
+addButton.addEventListener('click', openNewCardModal);
 
 // Навешивание обработчиков закрытия модальных окон
 popups.forEach((popup) => {
     popup.addEventListener('mousedown', (evt) => {
         if (evt.button != 0) return;
 
-        if (evt.target.classList.contains('popup_is-opened')) {
-            closeModal(popup)
-        }
-
-        if (evt.target.classList.contains('popup__close')) {
-            closeModal(popup)
+        if (
+            evt.target.classList.contains('popup_is-opened') ||
+            evt.target.classList.contains('popup__close')
+        ) {
+            closeModal(popup);
         }
     })
 }) 
@@ -66,11 +75,20 @@ cardForm.addEventListener('submit', function (evt) {
 });
 
 // Функция-обработчик события открытия модального окна для редактирования профиля
-function openProfileEditModal(evt) {
+function openProfileEditModal() {
     modalProfileTile.value = profileTitle.textContent;
     modalProfileDescription.value = profileDescription.textContent;
 
     openModal(editModal);
+    clearValidation(editForm, validationConfiguration);
+}
+
+// Функция-обработчик события открытия модального окна создания новой каточки
+function openNewCardModal() {
+    cardForm.reset();
+
+    openModal(cardModal);
+    clearValidation(cardForm, validationConfiguration);
 }
 
 // Функция открытия модального окна изображения карточки
@@ -84,3 +102,6 @@ function openImageModal(cardData) {
 
 // Вывести карточки на страницу
 initialCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard, likeCard, openImageModal)));
+
+// Включить вализацию полей форм
+enableValidation(validationConfiguration); 
