@@ -2,7 +2,7 @@ import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js'
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
-import { GetUserData, GetCards } from './components/api.js';
+import { GetUserData, GetCards, SaveUserData } from './components/api.js';
 
 // DOM узлы
 const cardList = document.querySelector('.places__list');
@@ -54,6 +54,17 @@ editForm.addEventListener('submit', function (evt) {
 
     profileTitle.textContent = modalProfileTile.value;
     profileDescription.textContent = modalProfileDescription.value;
+
+    SaveUserData({
+        name: modalProfileTile.value,
+        about: modalProfileDescription.value
+    })
+        .then(response => {
+            if ('name' in response)
+                return Promise.resolve("User data successfully saved!");
+
+            return Promise.reject('User data was not saved!');
+        })
 
     closeModal(editModal);
 });
@@ -107,10 +118,13 @@ Promise.all([GetUserData(), GetCards()]).then(responses => {
     const userData = responses[0];
     const usersCards = responses[1];
 
+    // Загружаем пользовательские данные
     const profileImage = document.querySelector('.profile__image');
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
     profileImage.style.backgroundImage = `url(${userData.avatar})`;
 
+    // Загружаем карточки
     usersCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard, likeCard, openImageModal)));
 });
+
