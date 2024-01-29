@@ -75,7 +75,8 @@ cardForm.addEventListener('submit', function (evt) {
 
     const cardData = {
         name: cardForm.querySelector('.popup__input_type_card-name').value,
-        link: cardForm.querySelector('.popup__input_type_url').value
+        link: cardForm.querySelector('.popup__input_type_url').value,
+        likes: []
     }
 
     AddCard(cardData)
@@ -83,7 +84,6 @@ cardForm.addEventListener('submit', function (evt) {
             if ('name' in response) {
                 cardList.prepend(createCard(cardData, deleteCard, likeCard, openImageModal));
 
-                // ???????????????????????????
                 return Promise.resolve('The card was successfully uploaded to the server!');
             }
               
