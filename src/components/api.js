@@ -44,3 +44,22 @@ export function SaveUserData(userData) {
             return Promise.reject("An error occurred while sending user data to the server.");
         }); 
 }
+
+export function AddCard(cardData) {
+    return fetch(`https://nomoreparties.co/v1/${auth.cohortId}/cards`, {
+        method: 'POST',
+        headers: {
+            authorization: auth.token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: cardData.name,
+            link: cardData.link
+        })
+    })
+        .then(res => {
+            if (res.ok) return res.json();
+
+            return Promise.reject("An error occurred while sending card data to the server.");
+        }); 
+}

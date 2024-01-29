@@ -2,7 +2,7 @@ import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js'
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
-import { GetUserData, GetCards, SaveUserData } from './components/api.js';
+import { GetUserData, GetCards, SaveUserData, AddCard } from './components/api.js';
 
 // DOM узлы
 const cardList = document.querySelector('.places__list');
@@ -78,7 +78,17 @@ cardForm.addEventListener('submit', function (evt) {
         link: cardForm.querySelector('.popup__input_type_url').value
     }
 
-    cardList.prepend(createCard(cardData, deleteCard, likeCard, openImageModal));
+    AddCard(cardData)
+        .then(response => {
+            if ('name' in response) {
+                cardList.prepend(createCard(cardData, deleteCard, likeCard, openImageModal));
+
+                // ???????????????????????????
+                return Promise.resolve('The card was successfully uploaded to the server!');
+            }
+              
+            return Promise.reject('The card was not uploaded to the server!');
+        })
 
     evt.target.reset();
 
