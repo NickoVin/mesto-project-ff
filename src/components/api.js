@@ -6,25 +6,9 @@ const config = {
     }
 }
 
-export function getUserData() {
-    return fetch(`${config.baseUrl}/users/me`, {
-        headers: config.headers
-    })
-        .then(res => {
-            if (res.ok) return res.json()
-        });
-}
+export const getUserData = () => sendSimpleRequest('GET', '/users/me');
 
-export function getCards() {
-    return fetch(`${config.baseUrl}/cards`, {
-        headers: config.headers
-    })
-        .then(res => {
-            if (res.ok) return res.json();
-
-            return Promise.reject(`Ошибка: ${res.status}`);
-        });
-}
+export const getCards = () => sendSimpleRequest('GET', '/cards');
 
 export function saveUserData(userData) {
     return fetch(`${config.baseUrl}/users/me`, {
@@ -58,9 +42,15 @@ export function saveCard(cardData) {
         }); 
 }
 
-export function deleteCard(cardId) {
-    return fetch(`${config.baseUrl}/cards/${cardId}`, {
-        method: 'DELETE',
+export const deleteCard = (cardId) => sendSimpleRequest('DELETE', '/cards/', cardId);
+
+export const like = (cardId) => sendSimpleRequest('PUT', '/cards/likes/', cardId);
+
+export const dislike = (cardId) => sendSimpleRequest('DELETE', '/cards/likes/', cardId);
+
+function sendSimpleRequest(method = 'GET', path, param = '') {
+    return fetch(`${config.baseUrl}${path}${param}`, {
+        method: method,
         headers: config.headers
     })
         .then(res => {

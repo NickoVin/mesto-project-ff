@@ -117,7 +117,7 @@ enableValidation(validationConfiguration);
 Promise.all([getUserData(), getCards()]).then(responses => {
     const userData = responses[0];
     const usersCards = responses[1];
-
+    
     // Загружаем пользовательские данные
     const profileImage = document.querySelector('.profile__image');
     profileTitle.textContent = userData.name;
