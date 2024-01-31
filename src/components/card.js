@@ -1,3 +1,5 @@
+import { deleteCard as deleteCardFromServer } from './api.js';
+
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 
@@ -17,12 +19,21 @@ export function createCard(cardData, deleteCard, likeCard, openImage) {
 
     likeCounter.textContent = cardData.likes.length;
 
+    cardElement.id = cardData._id;
+
     return cardElement;
 }
 
 // Функция удаления карточки
 export function deleteCard(event) {
-    event.target.closest('.card').remove();
+    const card = event.target.closest('.card');
+    console.log(card.id);
+    deleteCardFromServer(card.id)
+        .then(response => {
+            if (response.message == 'Пост удалён')
+                card.remove();
+        })
+        .catch(error => console.log(error));
 }
 
 // Функция-обработчик события клика на сердечко карточки

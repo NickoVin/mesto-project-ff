@@ -2,7 +2,7 @@ import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js'
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
-import { GetUserData, GetCards, SaveUserData, AddCard } from './components/api.js';
+import { getUserData, getCards, saveUserData, saveCard } from './components/api.js';
 
 // DOM узлы
 const cardList = document.querySelector('.places__list');
@@ -55,16 +55,11 @@ editForm.addEventListener('submit', function (evt) {
     profileTitle.textContent = modalProfileTile.value;
     profileDescription.textContent = modalProfileDescription.value;
 
-    SaveUserData({
+    saveUserData({
         name: modalProfileTile.value,
         about: modalProfileDescription.value
     })
-        .then(response => {
-            if ('name' in response)
-                return Promise.resolve("User data successfully saved!");
-
-            return Promise.reject('User data was not saved!');
-        })
+        .catch(error => console.log(error))
 
     closeModal(editModal);
 });
@@ -75,20 +70,15 @@ cardForm.addEventListener('submit', function (evt) {
 
     const cardData = {
         name: cardForm.querySelector('.popup__input_type_card-name').value,
-        link: cardForm.querySelector('.popup__input_type_url').value,
-        likes: []
+        link: cardForm.querySelector('.popup__input_type_url').value
     }
 
-    AddCard(cardData)
+    saveCard(cardData)
         .then(response => {
-            if ('name' in response) {
-                cardList.prepend(createCard(cardData, deleteCard, likeCard, openImageModal));
-
-                return Promise.resolve('The card was successfully uploaded to the server!');
-            }
-              
-            return Promise.reject('The card was not uploaded to the server!');
+            if ('name' in response)
+                cardList.prepend(createCard(response, deleteCard, likeCard, openImageModal));
         })
+        .catch(error => console.log(error))
 
     evt.target.reset();
 
@@ -124,7 +114,7 @@ function openImageModal(cardData) {
 // Включить вализацию полей форм
 enableValidation(validationConfiguration);
 
-Promise.all([GetUserData(), GetCards()]).then(responses => {
+Promise.all([getUserData(), getCards()]).then(responses => {
     const userData = responses[0];
     const usersCards = responses[1];
 
@@ -135,6 +125,14 @@ Promise.all([GetUserData(), GetCards()]).then(responses => {
     profileImage.style.backgroundImage = `url(${userData.avatar})`;
 
     // Загружаем карточки
-    usersCards.forEach(cardData => cardList.append(createCard(cardData, deleteCard, likeCard, openImageModal)));
-});
+    usersCards.forEach(cardData => {
+        let card = createCard(cardData, deleteCard, likeCard, openImageModal);
 
+        if (cardData.owner._id != userData._id) {
+            const deleteButton = card.querySelector('.card__delete-button');
+            deleteButton.remove();
+        }
+
+        cardList.append(card);
+    });
+});

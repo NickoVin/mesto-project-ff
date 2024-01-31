@@ -1,38 +1,35 @@
-const auth = {
-    serverUrl: 'https://mesto.nomoreparties.co',
-    token: '7d94ca1a-3ca0-4ad0-af4f-3aa495c39809',
-    cohortId: 'cohort-magistr-2'
+const config = {
+    baseUrl: 'https://nomoreparties.co/v1/cohort-magistr-2',
+    headers: {
+      authorization: '7d94ca1a-3ca0-4ad0-af4f-3aa495c39809',
+      'Content-Type': 'application/json'
+    }
 }
 
-export function GetUserData() {
-    return fetch(`https://nomoreparties.co/v1/${auth.cohortId}/users/me`, {
-        headers: {
-            authorization: auth.token
-        }
+export function getUserData() {
+    return fetch(`${config.baseUrl}/users/me`, {
+        headers: config.headers
     })
-        .then(res => { if (res.ok) return res.json() });
+        .then(res => {
+            if (res.ok) return res.json()
+        });
 }
 
-export function GetCards() {
-    return fetch(`https://nomoreparties.co/v1/${auth.cohortId}/cards`, {
-        headers: {
-            authorization: auth.token
-        }
+export function getCards() {
+    return fetch(`${config.baseUrl}/cards`, {
+        headers: config.headers
     })
         .then(res => {
             if (res.ok) return res.json();
 
-            return Promise.reject("An error occurred while retrieving user cards from the server.");
+            return Promise.reject(`Ошибка: ${res.status}`);
         });
 }
 
-export function SaveUserData(userData) {
-    return fetch(`https://nomoreparties.co/v1/${auth.cohortId}/users/me`, {
+export function saveUserData(userData) {
+    return fetch(`${config.baseUrl}/users/me`, {
         method: 'PATCH',
-        headers: {
-            authorization: auth.token,
-            'Content-Type': 'application/json'
-        },
+        headers: config.headers,
         body: JSON.stringify({
             name: userData.name,
             about: userData.about
@@ -41,17 +38,14 @@ export function SaveUserData(userData) {
         .then(res => {
             if (res.ok) return res.json();
 
-            return Promise.reject("An error occurred while sending user data to the server.");
+            return Promise.reject(`Error: ${res.status}`);
         }); 
 }
 
-export function AddCard(cardData) {
-    return fetch(`https://nomoreparties.co/v1/${auth.cohortId}/cards`, {
+export function saveCard(cardData) {
+    return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
-        headers: {
-            authorization: auth.token,
-            'Content-Type': 'application/json'
-        },
+        headers: config.headers,
         body: JSON.stringify({
             name: cardData.name,
             link: cardData.link
@@ -60,6 +54,18 @@ export function AddCard(cardData) {
         .then(res => {
             if (res.ok) return res.json();
 
-            return Promise.reject("An error occurred while sending card data to the server.");
+            return Promise.reject(`Error: ${res.status}`);
+        }); 
+}
+
+export function deleteCard(cardId) {
+    return fetch(`${config.baseUrl}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers
+    })
+        .then(res => {
+            if (res.ok) return res.json();
+
+            return Promise.reject(`Error: ${res.status}`);
         }); 
 }
