@@ -44,9 +44,9 @@ export function saveCard(cardData) {
 
 export const deleteCard = (cardId) => sendSimpleRequest('DELETE', '/cards/', cardId);
 
-export const like = (cardId) => sendSimpleRequest('PUT', '/cards/likes/', cardId);
+export const likeCard = (cardId) => sendSimpleRequest('PUT', '/cards/likes/', cardId);
 
-export const dislike = (cardId) => sendSimpleRequest('DELETE', '/cards/likes/', cardId);
+export const dislikeCard = (cardId) => sendSimpleRequest('DELETE', '/cards/likes/', cardId);
 
 function sendSimpleRequest(method = 'GET', path, param = '') {
     return fetch(`${config.baseUrl}${path}${param}`, {

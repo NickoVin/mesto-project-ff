@@ -126,7 +126,7 @@ Promise.all([getUserData(), getCards()]).then(responses => {
 
     // Загружаем карточки
     usersCards.forEach(cardData => {
-        let card = createCard(cardData, deleteCard, likeCard, openImageModal);
+        let card = createCard(cardData, deleteCard, likeCard, openImageModal, userData._id);
 
         if (cardData.owner._id != userData._id) {
             const deleteButton = card.querySelector('.card__delete-button');
