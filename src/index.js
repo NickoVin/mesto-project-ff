@@ -53,55 +53,68 @@ popups.forEach((popup) => {
     })
 }) 
 
+// Обработчик отправки формы редактирования аватарки профиля
 profileImageForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     const imageUrlModal = profileImageForm.querySelector('.popup__input_type_url').value;
+    const submitButton = profileForm.querySelector('.popup__button');
+
+    submitButton.textContent = "Сохранение...";
 
     uploadProfileImage(imageUrlModal)
-        .then(response => profileImage.style.backgroundImage = `url(${imageUrlModal})`)
-        .catch(error => console.log(error));
-
-    closeModal(profileImageModal);
+        .then(() => {
+            profileImage.style.backgroundImage = `url(${imageUrlModal})`;
+            closeModal(profileImageModal);
+        })
+        .catch(error => console.log(error))
+        .finally(() => submitButton.textContent = "Сохранить");
 })
 
 // Обработчик отправки формы редактирования профиля
 editForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
 
+    const submitButton = editForm.querySelector('.popup__button');
+
     profileTitle.textContent = modalProfileTile.value;
     profileDescription.textContent = modalProfileDescription.value;
+
+    submitButton.textContent = "Сохранение...";
 
     saveUserData({
         name: modalProfileTile.value,
         about: modalProfileDescription.value
     })
+        .then(() => closeModal(editModal))
         .catch(error => console.log(error))
-
-    closeModal(editModal);
+        .finally(() => submitButton.textContent = "Сохранить");
 });
 
 // Обработчик отправки формы добавления новой карточки
 cardForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
 
+    const submitButton = cardForm.querySelector('.popup__button');
     const cardData = {
         name: cardForm.querySelector('.popup__input_type_card-name').value,
         link: cardForm.querySelector('.popup__input_type_url').value
     }
 
+    submitButton.textContent = "Сохранение...";
+
     saveCard(cardData)
         .then(response => {
-            if ('name' in response)
-                cardList.prepend(createCard(response, deleteCard, likeCard, openImageModal));
+            cardList.prepend(createCard(response, deleteCard, likeCard, openImageModal));
+
+            evt.target.reset();
+            closeModal(cardModal);
         })
         .catch(error => console.log(error))
-
-    evt.target.reset();
-
-    closeModal(cardModal);
+        .finally(() => submitButton.textContent = "Сохранить");
 });
 
+// Функция-обработчик события открытия модального окна для редактирования аватарки профиля
 function openProfileImageEditModal() {
     profileImageForm.reset();
 
