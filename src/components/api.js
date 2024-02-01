@@ -48,6 +48,21 @@ export const likeCard = (cardId) => sendSimpleRequest('PUT', '/cards/likes/', ca
 
 export const dislikeCard = (cardId) => sendSimpleRequest('DELETE', '/cards/likes/', cardId);
 
+export function uploadProfileImage(url) {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({
+            avatar: url
+        })
+    })
+        .then(res => {
+            if (res.ok) return res.json();
+
+            return Promise.reject(`Error: ${res.status}`);
+        }); 
+}
+
 function sendSimpleRequest(method = 'GET', path, param = '') {
     return fetch(`${config.baseUrl}${path}${param}`, {
         method: method,

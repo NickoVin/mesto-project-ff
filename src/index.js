@@ -2,12 +2,14 @@ import './pages/index.css';
 import { openModal, closeModal } from './components/modal.js'
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
-import { getUserData, getCards, saveUserData, saveCard } from './components/api.js';
+import { getUserData, getCards, saveUserData, saveCard, uploadProfileImage} from './components/api.js';
 
 // DOM узлы
 const cardList = document.querySelector('.places__list');
+const profileImageButton = document.querySelector('.profile__image__edit-button');
 const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
+const profileImageModal = document.querySelector('.popup_type_edit-image');
 const editModal = document.querySelector('.popup_type_edit');
 const cardModal = document.querySelector('.popup_type_new-card');
 const imageModal = document.querySelector('.popup_type_image');
@@ -19,7 +21,9 @@ const modalImageElement = imageModal.querySelector('.popup__image');
 const modalCaptionElement = imageModal.querySelector('.popup__caption');
 const editForm = document.forms['edit-profile'];
 const cardForm = document.forms['new-place'];
+const profileImageForm = document.forms['edit-image'];
 const popups = document.querySelectorAll('.popup');
+const profileImage = document.querySelector('.profile__image');
 
 const validationConfiguration = {
     formSelector: '.popup__form',
@@ -31,6 +35,7 @@ const validationConfiguration = {
 }
 
 // Навешивание обработчиков открытия модальных окон
+profileImageButton.addEventListener('click', openProfileImageEditModal);
 editButton.addEventListener('click', openProfileEditModal);
 addButton.addEventListener('click', openNewCardModal);
 
@@ -47,6 +52,18 @@ popups.forEach((popup) => {
         }
     })
 }) 
+
+profileImageForm.addEventListener('submit', function(evt) {
+    evt.preventDefault();
+
+    const imageUrlModal = profileImageForm.querySelector('.popup__input_type_url').value;
+
+    uploadProfileImage(imageUrlModal)
+        .then(response => profileImage.style.backgroundImage = `url(${imageUrlModal})`)
+        .catch(error => console.log(error));
+
+    closeModal(profileImageModal);
+})
 
 // Обработчик отправки формы редактирования профиля
 editForm.addEventListener('submit', function (evt) {
@@ -85,6 +102,13 @@ cardForm.addEventListener('submit', function (evt) {
     closeModal(cardModal);
 });
 
+function openProfileImageEditModal() {
+    profileImageForm.reset();
+
+    openModal(profileImageModal);
+    clearValidation(editForm, validationConfiguration);
+}
+
 // Функция-обработчик события открытия модального окна для редактирования профиля
 function openProfileEditModal() {
     modalProfileTile.value = profileTitle.textContent;
@@ -119,7 +143,6 @@ Promise.all([getUserData(), getCards()]).then(responses => {
     const usersCards = responses[1];
     
     // Загружаем пользовательские данные
-    const profileImage = document.querySelector('.profile__image');
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
     profileImage.style.backgroundImage = `url(${userData.avatar})`;
