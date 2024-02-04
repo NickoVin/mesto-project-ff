@@ -1,55 +1,49 @@
-let configuration = null;
-
 // Функция включения валидации форм
-export function enableValidation(externalConfig) {
-    setConfiguration(externalConfig);
-
-    const formsList = Array.from(document.querySelectorAll(configuration.formSelector));   
+export function enableValidation(config) {
+    const formsList = Array.from(document.querySelectorAll(config.formSelector));   
 
     formsList.forEach(formElement => {
         formElement.addEventListener('submit', evt => evt.preventDefault());
-        setEventListeners(formElement);
+        setEventListeners(formElement, config);
     });
 }
 
 // Функция очистки ошибок валидации
-export function clearValidation(formElement, externalConfig) {
-    setConfiguration(externalConfig);
-
-    const inputList = Array.from(formElement.querySelectorAll(configuration.inputSelector));
-    inputList.forEach(inputElement => hideInputError(formElement, inputElement));
+export function clearValidation(formElement, config) {
+    const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
+    inputList.forEach(inputElement => hideInputError(formElement, inputElement, config));
     
-    disableSubmitButton(formElement.querySelector(configuration.submitButtonSelector));
+    disableSubmitButton(formElement.querySelector(config.submitButtonSelector), config);
 }
 
 // Функция валидации полей формы
-function setEventListeners(formElement) {
-    const inputList = Array.from(formElement.querySelectorAll(configuration.inputSelector));
-    const buttonElement = formElement.querySelector(configuration.submitButtonSelector);
+function setEventListeners(formElement, config) {
+    const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
+    const buttonElement = formElement.querySelector(config.submitButtonSelector);
     
-    toggleButtonState(inputList, buttonElement);
+    toggleButtonState(inputList, buttonElement, config);
     
     inputList.forEach((inputElement) => {
         inputElement.addEventListener('input', function() {
-            checkInputValidity(formElement, inputElement);
-            toggleButtonState(inputList, buttonElement);
+            checkInputValidity(formElement, inputElement, config);
+            toggleButtonState(inputList, buttonElement, config);
         });
     });
 };
 
 // Функция переключенеия кнопки отправки формы
-function toggleButtonState(inputList, buttonElement) {
-    hasInvalidInput(inputList) ? disableSubmitButton(buttonElement) : enableSubmitButton(buttonElement);
+function toggleButtonState(inputList, buttonElement, config) {
+    hasInvalidInput(inputList) ? disableSubmitButton(buttonElement, config) : enableSubmitButton(buttonElement, config);
 };
 
-function disableSubmitButton(buttonElement) {
+function disableSubmitButton(buttonElement, config) {
     buttonElement.disabled = true;
-    buttonElement.classList.add(configuration.inactiveButtonClass);
+    buttonElement.classList.add(config.inactiveButtonClass);
 }
 
-function enableSubmitButton(buttonElement) {
+function enableSubmitButton(buttonElement, config) {
     buttonElement.disabled = false;
-    buttonElement.classList.remove(configuration.inactiveButtonClass);
+    buttonElement.classList.remove(config.inactiveButtonClass);
 }
 
 // Функция проверки наличия невалидного поля формы
@@ -60,7 +54,7 @@ function hasInvalidInput(inputList) {
 };
 
 // Функция проверки валидности поля формы
-function checkInputValidity(formElement, inputElement) {
+function checkInputValidity(formElement, inputElement, config) {
     inputElement.setCustomValidity('');
 
     if (!inputElement.validity.valid) {
@@ -68,51 +62,28 @@ function checkInputValidity(formElement, inputElement) {
             inputElement.setCustomValidity(inputElement.dataset.errorMessage);
         }
 
-        showInputError(formElement, inputElement, inputElement.validationMessage);
+        showInputError(formElement, inputElement, inputElement.validationMessage, config);
     } else {
-        hideInputError(formElement, inputElement);
+        hideInputError(formElement, inputElement, config);
     }
 };
 
 // Функция показа текста ошибки валидации
-function showInputError(formElement, inputElement, errorMessage) {
+function showInputError(formElement, inputElement, errorMessage, config) {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 
-    inputElement.classList.add(configuration.inputErrorClass);
-    errorElement.classList.add(configuration.errorClass);
+    inputElement.classList.add(config.inputErrorClass);
+    errorElement.classList.add(config.errorClass);
 
     errorElement.textContent = errorMessage;
 };
 
 // Функция скрытия текста ошибки валидации
-function hideInputError(formElement, inputElement) {
+function hideInputError(formElement, inputElement, config) {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 
-    inputElement.classList.remove(configuration.inputErrorClass);
-    errorElement.classList.remove(configuration.errorClass);
+    inputElement.classList.remove(config.inputErrorClass);
+    errorElement.classList.remove(config.errorClass);
 
     errorElement.textContent = '';
 };
-
-// Функия проверки корректности конфигурации
-function setConfiguration(externalConfig) {
-    if (!externalConfig || configuration) return;
-
-    const configurationKeys = [
-        'formSelector',
-        'inputSelector',
-        'submitButtonSelector',
-        'inactiveButtonClass',
-        'inputErrorClass',
-        'errorClass'
-    ]
-
-    const isValid = configurationKeys.every( key =>
-        key in externalConfig &&
-        externalConfig.key != ''
-    );
-
-    if (!isValid) return;
-
-    configuration = externalConfig;
-}
