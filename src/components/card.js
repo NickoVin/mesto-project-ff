@@ -28,6 +28,10 @@ export function createCard(cardData, deleteCard, likeCard, openImage, userId) {
     }
     likeCounter.textContent = cardData.likes.length;
 
+    if (cardData.owner._id != userId) {
+        card.querySelector('.card__delete-button').remove();
+    }
+
     cardElement.id = cardData._id;
 
     return cardElement;

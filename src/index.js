@@ -4,6 +4,8 @@ import { createCard, deleteCard, likeCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
 import { getUserData, getCards, saveUserData, saveCard, uploadProfileImage} from './components/api.js';
 
+let userId;
+
 // DOM узлы
 const popups = document.querySelectorAll('.popup');
 const cardList = document.querySelector('.places__list');
@@ -108,7 +110,7 @@ cardAddForm.addEventListener('submit', function (evt) {
         link: cardLinkElement.value
     })
         .then(response => {
-            cardList.prepend(createCard(response, deleteCard, likeCard, openImageModal));
+            cardList.prepend(createCard(response, deleteCard, likeCard, openImageModal, userId));
 
             evt.target.reset();
             closeModal(modalCardAdd);
@@ -154,23 +156,23 @@ function openImageModal(cardData) {
 // Включить вализацию полей форм
 enableValidation(validationConfiguration);
 
-Promise.all([getUserData(), getCards()]).then(responses => {
-    const userData = responses[0];
-    const usersCards = responses[1];
-    
-    // Загружаем пользовательские данные
-    profileTitle.textContent = userData.name;
-    profileDescription.textContent = userData.about;
-    profileImage.style.backgroundImage = `url(${userData.avatar})`;
+Promise.all([getUserData(), getCards()])
+    .then(responses => {
+        const userData = responses[0];
+        const usersCards = responses[1];
 
-    // Загружаем карточки
-    usersCards.forEach(cardData => {
-        let card = createCard(cardData, deleteCard, likeCard, openImageModal, userData._id);
+        userId = userData._id;
 
-        if (cardData.owner._id != userData._id) {
-            card.querySelector('.card__delete-button').remove();
-        }
+        // Загружаем пользовательские данные
+        profileTitle.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        profileImage.style.backgroundImage = `url(${userData.avatar})`;
 
-        cardList.append(card);
-    });
-});
+        // Загружаем карточки
+        usersCards.forEach(cardData => {
+            cardList.append(
+                createCard(cardData, deleteCard, likeCard, openImageModal, userId)
+            );
+        });
+    })
+    .catch(error => console.log(error));
