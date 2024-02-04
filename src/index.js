@@ -5,31 +5,34 @@ import { enableValidation, clearValidation } from './components/validation.js';
 import { getUserData, getCards, saveUserData, saveCard, uploadProfileImage} from './components/api.js';
 
 // DOM узлы
+const popups = document.querySelectorAll('.popup');
 const cardList = document.querySelector('.places__list');
-const profileImageButton = document.querySelector('.profile__image__edit-button');
-const editButton = document.querySelector('.profile__edit-button');
-const addButton = document.querySelector('.profile__add-button');
-const profileImageModal = document.querySelector('.popup_type_edit-image');
-const editModal = document.querySelector('.popup_type_edit');
-const cardModal = document.querySelector('.popup_type_new-card');
-const imageModal = document.querySelector('.popup_type_image');
+
+const modalProfileEditData = document.querySelector('.popup_type_edit');
+const modalProfileEditImage = document.querySelector('.popup_type_edit-image');
+const modalCardAdd = document.querySelector('.popup_type_new-card');
+const modalImageOpen = document.querySelector('.popup_type_image');
+
+const profileEditImageButton = document.querySelector('.profile__image__edit-button');
+const profileEditDataButton = document.querySelector('.profile__edit-button');
+const profileAddCardButton = document.querySelector('.profile__add-button');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
-const modalProfileTile = editModal.querySelector('.popup__input_type_name');
-const modalProfileDescription = editModal.querySelector('.popup__input_type_description');
-const modalImageElement = imageModal.querySelector('.popup__image');
-const modalCaptionElement = imageModal.querySelector('.popup__caption');
-const editForm = document.forms['edit-profile'];
-const cardForm = document.forms['new-place'];
-const profileImageForm = document.forms['edit-image'];
-const popups = document.querySelectorAll('.popup');
 const profileImage = document.querySelector('.profile__image');
-const imageUrlModal = profileImageForm.querySelector('.popup__input_type_url').value;
 
-const cardData = {
-    name: cardForm.querySelector('.popup__input_type_card-name').value,
-    link: cardForm.querySelector('.popup__input_type_url').value
-}
+const profileEditForm = document.forms['edit-profile'];
+const profileTileModal = profileEditForm.querySelector('.popup__input_type_name');
+const profileDescriptionModal = profileEditForm.querySelector('.popup__input_type_description');
+
+const profileImageForm = document.forms['edit-image'];
+const imageUrlModal = profileImageForm.querySelector('.popup__input_type_url');
+
+const cardImageModal = modalImageOpen.querySelector('.popup__image');
+const cardCaptionModal = modalImageOpen.querySelector('.popup__caption');
+
+const cardAddForm = document.forms['new-place'];
+const cardNameElement = cardAddForm.querySelector('.popup__input_type_card-name');
+const cardLinkElement = cardAddForm.querySelector('.popup__input_type_url');
 
 const validationConfiguration = {
     formSelector: '.popup__form',
@@ -41,9 +44,9 @@ const validationConfiguration = {
 }
 
 // Навешивание обработчиков открытия модальных окон
-profileImageButton.addEventListener('click', openProfileImageEditModal);
-editButton.addEventListener('click', openProfileEditModal);
-addButton.addEventListener('click', openNewCardModal);
+profileEditImageButton.addEventListener('click', openProfileImageEditModal);
+profileEditDataButton.addEventListener('click', openProfileEditModal);
+profileAddCardButton.addEventListener('click', openNewCardModal);
 
 // Навешивание обработчиков закрытия модальных окон
 popups.forEach((popup) => {
@@ -65,45 +68,50 @@ profileImageForm.addEventListener('submit', function(evt) {
 
     evt.submitter.textContent = "Сохранение...";
 
-    uploadProfileImage(imageUrlModal)
+    uploadProfileImage(imageUrlModal.value)
         .then(() => {
-            profileImage.style.backgroundImage = `url(${imageUrlModal})`;
-            closeModal(profileImageModal);
+            profileImage.style.backgroundImage = `url(${imageUrlModal.value})`;
+            closeModal(modalProfileEditImage);
         })
         .catch(error => console.log(error))
         .finally(() => evt.submitter.textContent = "Сохранить");
 })
 
 // Обработчик отправки формы редактирования профиля
-editForm.addEventListener('submit', function (evt) {
+profileEditForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-
-    profileTitle.textContent = modalProfileTile.value;
-    profileDescription.textContent = modalProfileDescription.value;
 
     evt.submitter.textContent = "Сохранение...";
 
     saveUserData({
-        name: modalProfileTile.value,
-        about: modalProfileDescription.value
+        name: profileTileModal.value,
+        about: profileDescriptionModal.value
     })
-        .then(() => closeModal(editModal))
+        .then(() => {
+            profileTitle.textContent = profileTileModal.value;
+            profileDescription.textContent = profileDescriptionModal.value;
+
+            closeModal(modalProfileEditData)
+        })
         .catch(error => console.log(error))
         .finally(() => evt.submitter.textContent = "Сохранить");
 });
 
 // Обработчик отправки формы добавления новой карточки
-cardForm.addEventListener('submit', function (evt) {
+cardAddForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
 
     evt.submitter.textContent = "Сохранение...";
 
-    saveCard(cardData)
+    saveCard({
+        name: cardNameElement.value,
+        link: cardLinkElement.value
+    })
         .then(response => {
             cardList.prepend(createCard(response, deleteCard, likeCard, openImageModal));
 
             evt.target.reset();
-            closeModal(cardModal);
+            closeModal(modalCardAdd);
         })
         .catch(error => console.log(error))
         .finally(() => evt.submitter.textContent = "Сохранить");
@@ -113,34 +121,34 @@ cardForm.addEventListener('submit', function (evt) {
 function openProfileImageEditModal() {
     profileImageForm.reset();
 
-    openModal(profileImageModal);
-    clearValidation(editForm, validationConfiguration);
+    openModal(modalProfileEditImage);
+    clearValidation(profileEditForm, validationConfiguration);
 }
 
 // Функция-обработчик события открытия модального окна для редактирования профиля
 function openProfileEditModal() {
-    modalProfileTile.value = profileTitle.textContent;
-    modalProfileDescription.value = profileDescription.textContent;
+    profileTileModal.value = profileTitle.textContent;
+    profileDescriptionModal.value = profileDescription.textContent;
 
-    openModal(editModal);
-    clearValidation(editForm, validationConfiguration);
+    openModal(modalProfileEditData);
+    clearValidation(profileEditForm, validationConfiguration);
 }
 
 // Функция-обработчик события открытия модального окна создания новой каточки
 function openNewCardModal() {
-    cardForm.reset();
+    cardAddForm.reset();
 
-    openModal(cardModal);
-    clearValidation(cardForm, validationConfiguration);
+    openModal(modalCardAdd);
+    clearValidation(cardAddForm, validationConfiguration);
 }
 
 // Функция открытия модального окна изображения карточки
 function openImageModal(cardData) {
-    modalImageElement.src = cardData.link;
-    modalImageElement.alt = cardData.name;
-    modalCaptionElement.textContent = cardData.name;
+    cardImageModal.src = cardData.link;
+    cardImageModal.alt = cardData.name;
+    cardCaptionModal.textContent = cardData.name;
     
-    openModal(imageModal);
+    openModal(modalImageOpen);
 }
 
 // Включить вализацию полей форм
