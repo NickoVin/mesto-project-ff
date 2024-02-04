@@ -24,6 +24,12 @@ const cardForm = document.forms['new-place'];
 const profileImageForm = document.forms['edit-image'];
 const popups = document.querySelectorAll('.popup');
 const profileImage = document.querySelector('.profile__image');
+const imageUrlModal = profileImageForm.querySelector('.popup__input_type_url').value;
+
+const cardData = {
+    name: cardForm.querySelector('.popup__input_type_card-name').value,
+    link: cardForm.querySelector('.popup__input_type_url').value
+}
 
 const validationConfiguration = {
     formSelector: '.popup__form',
@@ -57,10 +63,7 @@ popups.forEach((popup) => {
 profileImageForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
-    const imageUrlModal = profileImageForm.querySelector('.popup__input_type_url').value;
-    const submitButton = profileImageForm.querySelector('.popup__button');
-
-    submitButton.textContent = "Сохранение...";
+    evt.submitter.textContent = "Сохранение...";
 
     uploadProfileImage(imageUrlModal)
         .then(() => {
@@ -68,19 +71,17 @@ profileImageForm.addEventListener('submit', function(evt) {
             closeModal(profileImageModal);
         })
         .catch(error => console.log(error))
-        .finally(() => submitButton.textContent = "Сохранить");
+        .finally(() => evt.submitter.textContent = "Сохранить");
 })
 
 // Обработчик отправки формы редактирования профиля
 editForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
 
-    const submitButton = editForm.querySelector('.popup__button');
-
     profileTitle.textContent = modalProfileTile.value;
     profileDescription.textContent = modalProfileDescription.value;
 
-    submitButton.textContent = "Сохранение...";
+    evt.submitter.textContent = "Сохранение...";
 
     saveUserData({
         name: modalProfileTile.value,
@@ -88,20 +89,14 @@ editForm.addEventListener('submit', function (evt) {
     })
         .then(() => closeModal(editModal))
         .catch(error => console.log(error))
-        .finally(() => submitButton.textContent = "Сохранить");
+        .finally(() => evt.submitter.textContent = "Сохранить");
 });
 
 // Обработчик отправки формы добавления новой карточки
 cardForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
 
-    const submitButton = cardForm.querySelector('.popup__button');
-    const cardData = {
-        name: cardForm.querySelector('.popup__input_type_card-name').value,
-        link: cardForm.querySelector('.popup__input_type_url').value
-    }
-
-    submitButton.textContent = "Сохранение...";
+    evt.submitter.textContent = "Сохранение...";
 
     saveCard(cardData)
         .then(response => {
@@ -111,7 +106,7 @@ cardForm.addEventListener('submit', function (evt) {
             closeModal(cardModal);
         })
         .catch(error => console.log(error))
-        .finally(() => submitButton.textContent = "Сохранить");
+        .finally(() => evt.submitter.textContent = "Сохранить");
 });
 
 // Функция-обработчик события открытия модального окна для редактирования аватарки профиля
@@ -165,8 +160,7 @@ Promise.all([getUserData(), getCards()]).then(responses => {
         let card = createCard(cardData, deleteCard, likeCard, openImageModal, userData._id);
 
         if (cardData.owner._id != userData._id) {
-            const deleteButton = card.querySelector('.card__delete-button');
-            deleteButton.remove();
+            card.querySelector('.card__delete-button').remove();
         }
 
         cardList.append(card);
