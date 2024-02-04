@@ -1,3 +1,5 @@
+import { checkResponse } from '../utils/checkResponse.js' ;
+
 const config = {
     baseUrl: 'https://nomoreparties.co/v1/cohort-magistr-2',
     headers: {
@@ -6,71 +8,55 @@ const config = {
     }
 }
 
-export const getUserData = () => sendSimpleRequest('GET', '/users/me');
+export const getUserData = () => request(`${config.baseUrl}/users/me`, {
+    method: 'GET',
+    headers: config.headers
+});
 
-export const getCards = () => sendSimpleRequest('GET', '/cards');
+export const getCards = () => request(`${config.baseUrl}/cards`, {
+    method: 'GET',
+    headers: config.headers
+});
 
-export function saveUserData(userData) {
-    return fetch(`${config.baseUrl}/users/me`, {
-        method: 'PATCH',
-        headers: config.headers,
-        body: JSON.stringify({
-            name: userData.name,
-            about: userData.about
-        })
+export const saveUserData = (userData) => request(`${config.baseUrl}/users/me`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+        name: userData.name,
+        about: userData.about
     })
-        .then(res => {
-            if (res.ok) return res.json();
+});
 
-            return Promise.reject(`Error: ${res.status}`);
-        }); 
-}
-
-export function saveCard(cardData) {
-    return fetch(`${config.baseUrl}/cards`, {
-        method: 'POST',
-        headers: config.headers,
-        body: JSON.stringify({
-            name: cardData.name,
-            link: cardData.link
-        })
+export const saveCard = (cardData) => request(`${config.baseUrl}/cards`, {
+    method: 'POST',
+    headers: config.headers,
+    body: JSON.stringify({
+        name: cardData.name,
+        link: cardData.link
     })
-        .then(res => {
-            if (res.ok) return res.json();
+});
 
-            return Promise.reject(`Error: ${res.status}`);
-        }); 
-}
+export const deleteCard = (cardId) => request(`${config.baseUrl}/cards/${cardId}`, {
+    method: 'DELETE',
+    headers: config.headers
+});
 
-export const deleteCard = (cardId) => sendSimpleRequest('DELETE', '/cards/', cardId);
+export const likeCard = (cardId) => request(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: 'PUT',
+    headers: config.headers
+});
 
-export const likeCard = (cardId) => sendSimpleRequest('PUT', '/cards/likes/', cardId);
+export const dislikeCard = (cardId) => request(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: 'DELETE',
+    headers: config.headers
+});
 
-export const dislikeCard = (cardId) => sendSimpleRequest('DELETE', '/cards/likes/', cardId);
-
-export function uploadProfileImage(url) {
-    return fetch(`${config.baseUrl}/users/me/avatar`, {
-        method: 'PATCH',
-        headers: config.headers,
-        body: JSON.stringify({
-            avatar: url
-        })
+export const uploadProfileImage = (url) => request(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+        avatar: url
     })
-        .then(res => {
-            if (res.ok) return res.json();
+});
 
-            return Promise.reject(`Error: ${res.status}`);
-        }); 
-}
-
-function sendSimpleRequest(method = 'GET', path, param = '') {
-    return fetch(`${config.baseUrl}${path}${param}`, {
-        method: method,
-        headers: config.headers
-    })
-        .then(res => {
-            if (res.ok) return res.json();
-
-            return Promise.reject(`Error: ${res.status}`);
-        }); 
-}
+const request = (url, options) => fetch(url, options).then(checkResponse);

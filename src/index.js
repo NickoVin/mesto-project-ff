@@ -58,7 +58,7 @@ profileImageForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     const imageUrlModal = profileImageForm.querySelector('.popup__input_type_url').value;
-    const submitButton = profileForm.querySelector('.popup__button');
+    const submitButton = profileImageForm.querySelector('.popup__button');
 
     submitButton.textContent = "Сохранение...";
 
